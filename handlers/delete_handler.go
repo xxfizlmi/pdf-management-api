@@ -24,11 +24,11 @@ func DeletePDF(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var status string
+	var status, filename string
 	err = config.DB.QueryRow(
-		"SELECT status FROM pdf_files WHERE id = ?",
+		"SELECT status, filename FROM pdf_files WHERE id = ?",
 		id,
-	).Scan(&status)
+	).Scan(&status, &filename)
 
 	if err != nil {
 		http.Error(w, "File not found", http.StatusNotFound)
@@ -42,7 +42,7 @@ func DeletePDF(w http.ResponseWriter, r *http.Request) {
 
 	_, err = config.DB.Exec(
 		`UPDATE pdf_files
-		 SET status = ?, deleted_at = ?
+		 SET status = ?, deleted_at = ?, updated_at=?
 		 WHERE id = ?`,
 		"DELETED", time.Now(), id,
 	)
@@ -58,6 +58,7 @@ func DeletePDF(w http.ResponseWriter, r *http.Request) {
 		"data": map[string]interface{}{
 			"id":         id,
 			"status":     "DELETED",
+			"filename":   filename,
 			"deleted_at": time.Now(),
 		},
 	}

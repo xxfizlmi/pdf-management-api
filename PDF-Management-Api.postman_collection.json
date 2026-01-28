@@ -1,0 +1,93 @@
+{
+	"info": {
+		"_postman_id": "f4db2f99-b0ba-4c53-8c92-fde995138248",
+		"name": "PDF-Management-Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23828762"
+	},
+	"item": [
+		{
+			"name": "PDF_Handler",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\" : \"PDF Test\",\r\n    \"institution\" : \"PT Belajar Golang\",\r\n    \"address\" : \"Jakarta\",\r\n    \"phone\" : \"081234\",\r\n    \"content\": \"PDF Berhasil dibuat\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/pdf/generate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"pdf",
+						"generate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload_Handler",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"description": "Pilih PDF",
+							"type": "file",
+							"src": "/C:/Users/USER/Downloads/Technical_Test_Backend_Developer_REST_API.docx.pdf"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/pdf/upload",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"pdf",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List_handler",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/pdf/list",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"pdf",
+						"list"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

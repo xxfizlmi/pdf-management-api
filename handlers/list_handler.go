@@ -12,6 +12,13 @@ func ListPDF(w http.ResponseWriter, r *http.Request) {
 	status := r.URL.Query().Get("status")
 	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
 	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	var total int
+	countQuery := "SELECT COUNT(*) FROM pdf_files"
+	countArgs := []interface{}{}
+	if status != "" {
+		countQuery += " WHERE status = ?"
+		countArgs = append(countArgs, status)
+	}
 
 	if page < 1 {
 		page = 1
@@ -19,6 +26,7 @@ func ListPDF(w http.ResponseWriter, r *http.Request) {
 	if limit < 1 {
 		limit = 10
 	}
+	config.DB.QueryRow(countQuery, countArgs...).Scan(&total)
 
 	offset := (page - 1) * limit
 
@@ -65,6 +73,7 @@ func ListPDF(w http.ResponseWriter, r *http.Request) {
 		"pagination": map[string]interface{}{
 			"page":  page,
 			"limit": limit,
+			 "total": total,
 		},
 	}
 

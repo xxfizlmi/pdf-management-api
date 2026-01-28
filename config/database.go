@@ -24,7 +24,9 @@ func InitDB() {
 		filepath TEXT,
 		size INTEGER,
 		status TEXT,
-		created_at DATETIME
+		created_at DATETIME,
+		updated_at TIMESTAMP,
+		deleted_at DATETIME
 	);
 	`
 

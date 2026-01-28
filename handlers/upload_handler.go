@@ -14,30 +14,32 @@ import (
 
 func UploadPDF(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		jsonError(w, http.StatusMethodNotAllowed, "Method not allowed", "METHOD_NOT_ALLOWED")
 		return
 	}
-	r.ParseMultipartForm(10 << 20) // 10 MB
+
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		jsonError(w, http.StatusBadRequest, "File size exceeds maximum limit (10MB)", "FILE_TOO_LARGE")
+		return
+	}
 
 	file, handler, err := r.FormFile("file")
 	if err != nil {
-		http.Error(w, "Error retrieving the file", http.StatusBadRequest)
+		jsonError(w, http.StatusBadRequest, "File is required", "FILE_REQUIRED")
 		return
 	}
-	defer file.Close()
 
-	if !strings.HasSuffix(handler.Filename, ".pdf") {
-		http.Error(w, "Only PDF files are allowed", http.StatusBadRequest)
+	if !strings.HasSuffix(strings.ToLower(handler.Filename), ".pdf") {
+		jsonError(w, http.StatusBadRequest, "Only PDF files are allowed", "INVALID_EXTENSION")
 		return
 	}
 
 	buffer := make([]byte, 512)
 	file.Read(buffer)
-	filetype := http.DetectContentType(buffer)
 	file.Seek(0, 0)
 
-	if filetype != "application/pdf" {
-		http.Error(w, "Invalid file type", http.StatusBadRequest)
+	if http.DetectContentType(buffer) != "application/pdf" {
+		jsonError(w, http.StatusBadRequest, "Invalid MIME type, must be application/pdf", "INVALID_MIME")
 		return
 	}
 
@@ -82,4 +84,14 @@ func UploadPDF(w http.ResponseWriter, r *http.Request) {
 		filename, handler.Filename, filepath, handler.Size, "UPLOADED", time.Now(),
 	)
 
+}
+
+func jsonError(w http.ResponseWriter, status int, msg string, code string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success":    false,
+		"message":    msg,
+		"error_code": code,
+	})
 }
